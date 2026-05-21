@@ -1,0 +1,107 @@
+@model TaskItem
+@{
+    ViewData["Title"] = "Task Detalları";
+
+    var (statusClass, statusIcon) = Model.Status switch
+    {
+        WorkStatus.Done    => ("success", "bi-check-circle-fill"),
+        WorkStatus.Overdue => ("danger",  "bi-exclamation-triangle-fill"),
+        WorkStatus.Urgent  => ("warning", "bi-clock-fill"),
+        _                  => ("primary", "bi-play-circle-fill")
+    };
+
+    var priorityClass = Model.Priority switch
+    {
+        Priority.High   => "danger",
+        Priority.Medium => "warning",
+        _               => "secondary"
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-info-circle me-2"></i>Task Detalları</h4>
+                <span class="badge bg-light text-dark">#@Model.Id</span>
+            </div>
+            <div class="card-body">
+                <h3 class="mb-4">@Model.Title</h3>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">Priority</div>
+                            <span class="badge bg-@priorityClass fs-6">@Model.Priority</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">Status</div>
+                            <span class="badge bg-@statusClass fs-6">
+                                <i class="bi @statusIcon me-1"></i>@Model.Status
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">Deadline</div>
+                            <strong>
+                                @(Model.Deadline.HasValue
+                                    ? Model.Deadline.Value.ToLocalTime().ToString("dd MMMM yyyy, HH:mm")
+                                    : "Təyin edilməyib")
+                            </strong>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">Yaradılma tarixi</div>
+                            <strong>@Model.CreatedAt.ToLocalTime().ToString("dd MMMM yyyy, HH:mm")</strong>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">Tamamlanma</div>
+                            @if (Model.IsCompleted)
+                            {
+                                <span class="text-success fw-bold">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Tamamlanmışdır
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-secondary">
+                                    <i class="bi bi-circle me-1"></i>Tamamlanmayıb
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <div class="mb-4">
+                        <h6 class="text-muted text-uppercase small fw-bold">Təsvir</h6>
+                        <p class="mb-0" style="white-space:pre-line">@Model.Description</p>
+                    </div>
+                }
+
+                <div class="d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary text-white">
+                        <i class="bi bi-pencil me-1"></i>Redaktə et
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Siyahıya qayıt
+                    </a>
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="ms-auto"
+                          onsubmit="return confirm('Bu task-ı silmək istədiyinizə əminsiniz?')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-1"></i>Sil
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

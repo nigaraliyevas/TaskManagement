@@ -1,0 +1,80 @@
+@model TaskViewModel
+@{
+    ViewData["Title"] = "Task Redaktəsi";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Task Redaktəsi</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Başlıq <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" name="Title" value="@Model.Title"
+                               class="form-control @(Model.Errors.ContainsKey("Title") ? "is-invalid" : "")" />
+                        @if (Model.Errors.TryGetValue("Title", out var titleErr))
+                        {
+                            <div class="invalid-feedback">@titleErr</div>
+                        }
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Təsvir</label>
+                        <textarea name="Description" rows="3" class="form-control">@Model.Description</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Priority</label>
+                        <select name="Priority" class="form-select">
+                            @foreach (Priority p in Enum.GetValues(typeof(Priority)))
+                            {
+                                if (Model.Priority == p)
+                                {
+                                    <option value="@((int)p)" selected>@p</option>
+                                }
+                                else
+                                {
+                                    <option value="@((int)p)">@p</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Deadline</label>
+                        <input type="datetime-local" name="Deadline"
+                               value="@(Model.Deadline?.ToString("yyyy-MM-ddTHH:mm"))"
+                               class="form-control @(Model.Errors.ContainsKey("Deadline") ? "is-invalid" : "")" />
+                        @if (Model.Errors.TryGetValue("Deadline", out var dlErr))
+                        {
+                            <div class="invalid-feedback">@dlErr</div>
+                        }
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input asp-for="IsCompleted" class="form-check-input" />
+                        <label asp-for="IsCompleted" class="form-check-label">
+                            Tamamlanmış
+                        </label>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary text-white">
+                            <i class="bi bi-save me-1"></i>Yadda saxla
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.Id"
+                           class="btn btn-outline-secondary">Geri</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

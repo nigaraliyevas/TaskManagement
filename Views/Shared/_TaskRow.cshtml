@@ -1,0 +1,70 @@
+@model TaskItem
+
+@{
+    var (statusClass, statusIcon) = Model.Status switch
+    {
+        WorkStatus.Done    => ("success", "bi-check-circle-fill"),
+        WorkStatus.Overdue => ("danger",  "bi-exclamation-triangle-fill"),
+        WorkStatus.Urgent  => ("warning", "bi-clock-fill"),
+        _                  => ("primary", "bi-play-circle-fill")
+    };
+
+    var priorityClass = Model.Priority switch
+    {
+        Priority.High   => "danger",
+        Priority.Medium => "warning",
+        _               => "secondary"
+    };
+}
+
+<tr class="align-middle">
+    <td>
+        <span class="fw-semibold">@Model.Title</span>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <br />
+            <small class="text-muted">
+                @(Model.Description.Length > 60
+                    ? Model.Description[..60] + "…"
+                    : Model.Description)
+            </small>
+        }
+    </td>
+    <td><span class="badge bg-@priorityClass">@Model.Priority</span></td>
+    <td>
+        @if (Model.Deadline.HasValue)
+        {
+            <span class="@(Model.Status == WorkStatus.Overdue ? "text-danger fw-bold" : "")">
+                @Model.Deadline.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+            </span>
+        }
+        else
+        {
+            <span class="text-muted">—</span>
+        }
+    </td>
+    <td>
+        <span class="badge bg-@statusClass">
+            @Model.Status
+        </span>
+    </td>
+    <td>
+        <div class="btn-group btn-group-sm">
+            <a asp-action="Details" asp-route-id="@Model.Id"
+               class="btn btn-outline-info" title="Detallar">
+                <i class="bi bi-eye"></i>
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id"
+               class="btn btn-outline-primary" title="Redaktə">
+                <i class="bi bi-pencil"></i>
+            </a>
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                  onsubmit="return confirm('Bu task-ı silmək istədiyinizə əminsiniz?')">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger" title="Sil">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </form>
+        </div>
+    </td>
+</tr>
