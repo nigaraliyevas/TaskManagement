@@ -32,12 +32,10 @@ public class AppDbContext : DbContext
             entity.Property(t => t.IsCompleted)
                 .HasDefaultValue(false);
 
-            // UTC timestamp
-            entity.Property(t => t.Deadline)
+\            entity.Property(t => t.Deadline)
                 .HasColumnType("timestamp with time zone");
 
-            // UTC timestamp
-            entity.Property(t => t.CreatedAt)
+\            entity.Property(t => t.CreatedAt)
                 .HasColumnType("timestamp with time zone")
                 .HasDefaultValueSql("NOW()");
 

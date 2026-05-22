@@ -13,7 +13,7 @@ public class MappingProfile : Profile
          dest => dest.Deadline,
          opt => opt.MapFrom(src =>
              src.Deadline.HasValue
-                 ? src.Deadline.Value.ToUniversalTime()  // local(Baku) → UTC
+                 ? src.Deadline.Value.ToUniversalTime()
                  : (DateTime?)null));
 
         CreateMap<TaskItem, TaskViewModel>()
@@ -21,7 +21,7 @@ public class MappingProfile : Profile
                 dest => dest.Deadline,
                 opt => opt.MapFrom(src =>
                     src.Deadline.HasValue
-                        ? src.Deadline.Value.ToLocalTime()  // UTC → local(Baku)
+                        ? src.Deadline.Value.ToLocalTime()
                         : (DateTime?)null));
     }
 }
